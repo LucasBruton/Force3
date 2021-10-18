@@ -3,15 +3,19 @@ from Constants import WHITE_PAWN
 from Player import Player
 from Constants import BLACK_PAWN, WHITE_PAWN
 
+# Contains the main function of the programm
+
 def main() -> None:
     playerColor = None
     player1 = None
     player2 = None
 
+    # Asks what color the first player wants
     while(playerColor != "1" and playerColor != "2"):
         playerColor = input("Player 1 is white (1) or black (2)? (Type 1 or 2)\n")
         print()
 
+    # Creates the players
     if(playerColor == "1"):
         player1 = Player(0, WHITE_PAWN)
         player2 = Player(1, BLACK_PAWN)
@@ -21,35 +25,50 @@ def main() -> None:
         player2 = Player(1, WHITE_PAWN)
         print("Player 1 is black\nPlayer 2 is white\n")
 
+    # runs the game
     runGame(Board(player1, player2), player1, player2)
 
-    
+
+"""
+This function runs the game by asking turn by turn what action a player wishes to do.
+The function uses the following parameters:
+- board: Board of the game
+- player1: first player of the game
+- player2: second player of the game.
+"""
 def runGame(board: Board, player1: Player, player2: Player) -> None:
+    # This function runs untill a player wins.
     while(1):
+        # Asks what the first player wants to do
         actionDone = False
         while(not actionDone):
             if(board.isMove2SquarePawnsPossible()):
                 actionDone = FourPlayerChoices(player1, board)
             else: 
                 actionDone = ThreePlayerChoices(player1, board)
-        
+        # check if a player has wone
         if(checkWinner(board)):
             break
         
-
+        # Asks what the second player wants to do
         actionDone = False
         while(not actionDone):
             if(board.isMove2SquarePawnsPossible()):
                 actionDone = FourPlayerChoices(player2, board)
             else: 
                 actionDone = ThreePlayerChoices(player2, board)
-        
+        # check if a player has wone
         if(checkWinner(board)):
             break
         
-
-
-def ThreePlayerChoices(player: Player = 0, board: Board = None) -> None:
+"""
+This function is used when the player has 3 possible actions during his turn.
+The function uses the following parameters:
+- player: player who choices an action
+- board: board of the game.
+Returns true if the action of the player succeeded.
+"""
+def ThreePlayerChoices(player: Player = None, board: Board = None) -> bool:
     action = 0
     board.printBoard()
     print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the 3 following actions")
@@ -64,7 +83,14 @@ def ThreePlayerChoices(player: Player = 0, board: Board = None) -> None:
 
     return actionChoice(int(action), player.getPlayerNumber(), board)
 
-def FourPlayerChoices(player: Player = 0, board: Board = None) -> None:
+"""
+This function is used when the player has 4 possible actions during his turn.
+The function uses the following parameters:
+- player: plyaer who choices an action
+- board: board of the game.
+Returns true if the action of the player succeeded.
+"""
+def FourPlayerChoices(player: Player = None, board: Board = None) -> bool:
     action = 0
     board.printBoard()
     print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the 4 following actions")
@@ -80,7 +106,14 @@ def FourPlayerChoices(player: Player = 0, board: Board = None) -> None:
 
     return actionChoice(int(action), player.getPlayerNumber(), board)
 
-
+"""
+This function calls one of the possible actions of the player.
+The function uses the following parameters: 
+- action: number of the action to execute, action = 1, 2, 3 or 4
+- player: number of the player who is going to do the action, player = 0 or 1
+- board: board of the game
+Returns true if the action succeeded.
+"""
 def actionChoice(action: int, player: int, board: Board) -> bool:     
     if(action == 1): 
         return placeCircularPawn(player, board)
@@ -92,6 +125,14 @@ def actionChoice(action: int, player: int, board: Board) -> bool:
         return move2SquarePawns(board)
 
 
+"""
+placeCircularPawn corresponds to the following action : place a circular pawn onto the board
+This function asks the player where to place a new cicurlar pawn then places it onto the board.
+The function uses the following parameters:
+- player: number of the player who is placing the circular pawn, player = 0 or 1
+- board: board of the game.
+Returns True if the action succeeded.
+"""
 def placeCircularPawn(player: int, board: Board) -> bool:
         tile = 0
         tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -116,6 +157,15 @@ def placeCircularPawn(player: int, board: Board) -> bool:
             print("\nSuccess!\n")
             return True
 
+"""
+moveCircularPawn corresponds to the following action : move a placed circular pawn onto a free square pawn
+This function asks the player which circular pawn he would like to move and where he would like to move it.
+Afterwards, the function moves the circular pawn.
+The function uses the following parameters:
+- player: number of the player who is moving a circular pawn, player = 0 or 1
+- board: board of the game.
+Returns True if the action succeeded.
+"""
 def moveCircularPawn(player: int, board: Board) -> bool:
         previousTile = 0
         nextTile = 0
@@ -149,6 +199,15 @@ def moveCircularPawn(player: int, board: Board) -> bool:
             print("\nSuccess!\n")
             return True
 
+"""
+move2SquarePawns corresponds to the following action : 
+move 2 square pawns if the empty tile isn't in the middle, this action can't be used to reverse 
+the positions of the 2 square pawns moved by the previous player on their last turn.
+This function asks the player which 2 square pawn he would like to move and then moves them.
+The function uses the following parameter:
+- board: board of the game.
+Returns True if the action succeeded.
+"""
 def move2SquarePawns(board: Board) -> bool:
         firstTile = 0
         secondTile = 0
@@ -188,6 +247,14 @@ def move2SquarePawns(board: Board) -> bool:
             print("\nSuccess!\n")
             return True
 
+"""
+moveSquarePawn corresponds to the following action : move a square pawn onto the the empty tile.
+the positions of the 2 square pawns moved by the previous player on their last turn.
+This function asks the player which square pawn he would like to move and then moves it.
+The function uses the following parameter:
+- board: board of the game.
+Returns True if the action succeeded.
+"""
 def moveSquarePawn(board: Board) -> bool:
         tile = 0
         tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -209,6 +276,8 @@ def moveSquarePawn(board: Board) -> bool:
             print("\nSuccess!")
             return True
 
+
+# returns true if a player has wone
 def checkWinner(board) -> bool: 
     winner = board.checkIfWinner()
     if(winner == 0):

@@ -43,9 +43,9 @@ def runGame(board: Board, player1: Player, player2: Player) -> None:
         actionDone = False
         while(not actionDone):
             if(board.isMove2SquarePawnsPossible()):
-                actionDone = FourPlayerChoices(player1, board)
+                actionDone = twoSquarePawnsPossiblePlayerChoices(player1, board)
             else: 
-                actionDone = ThreePlayerChoices(player1, board)
+                actionDone = twoSquarePawnsImpossiblePlayerChoices(player1, board)
         # check if a player has wone
         if(checkWinner(board)):
             break
@@ -54,34 +54,44 @@ def runGame(board: Board, player1: Player, player2: Player) -> None:
         actionDone = False
         while(not actionDone):
             if(board.isMove2SquarePawnsPossible()):
-                actionDone = FourPlayerChoices(player2, board)
+                actionDone = twoSquarePawnsPossiblePlayerChoices(player2, board)
             else: 
-                actionDone = ThreePlayerChoices(player2, board)
+                actionDone = twoSquarePawnsImpossiblePlayerChoices(player2, board)
         # check if a player has wone
         if(checkWinner(board)):
             break
-        
+
 """
-This function is used when the player has 3 possible actions during his turn.
+This function is used when the player has 2 possible actions when they begin.
 The function uses the following parameters:
 - player: player who choices an action
 - board: board of the game.
 Returns true if the action of the player succeeded.
 """
-def ThreePlayerChoices(player: Player = None, board: Board = None) -> bool:
+def twoSquarePawnsImpossiblePlayerChoices(player: Player = None, board: Board = None) -> bool:
     action = 0
+    allowedChoices = []
     board.printBoard()
-    print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the 3 following actions")
-    print("- place a circular pawn on a square pawn (1);")
-    print("- move one of your circular pawns (2).")
+    print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the following actions")
+
+    if(len(player.pawns) < 3):
+        print("- place a circular pawn on a square pawn (1);")
+        allowedChoices.append("1");
+
+    if(len(player.pawns) > 0):
+        print("- move one of your circular pawns (2).")
+        allowedChoices.append("2")
+
     print("- move a square pawn to an empty tile (3);")
-    print("You have "+str(player.getNumberOfCircularPawns()) + " pawns.")
-    print("Type 1, 2 or 3 to choose an action")
-    while(action not in ["1", "2", "3"]):
+    allowedChoices.append("3")
+
+    print("You can place "+str(player.getNumberOfCircularPawnsAvailable()) + " pawns.")
+    print("Type the number between ( ) to choose an action")
+    while(action not in allowedChoices):
         action = input()
     print()
 
-    return actionChoice(int(action), player.getPlayerNumber(), board)
+    return actionChoice(int(action), player, board)
 
 """
 This function is used when the player has 4 possible actions during his turn.
@@ -90,21 +100,33 @@ The function uses the following parameters:
 - board: board of the game.
 Returns true if the action of the player succeeded.
 """
-def FourPlayerChoices(player: Player = None, board: Board = None) -> bool:
+def twoSquarePawnsPossiblePlayerChoices(player: Player = None, board: Board = None) -> bool:
     action = 0
+    allowedChoices = []
     board.printBoard()
-    print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the 4 following actions")
-    print("- place a circular pawn on a square pawn (1);")
-    print("- move one of your circular pawns (2);")
+    print("Player " + str(player.getPlayerNumber()+1) +", please choose an action between the following actions")
+
+    if(len(player.pawns) < 3):
+        print("- place a circular pawn on a square pawn (1);")
+        allowedChoices.append("1");
+
+    if(len(player.pawns) > 0):
+        print("- move one of your circular pawns (2).")
+        allowedChoices.append("2")
+
     print("- move a square pawn to an empty tile (3);")
+    allowedChoices.append("3")
+
     print("- move 2 square pawns (4).")
-    print("You have "+str(player.getNumberOfCircularPawns()) + " pawns.")
-    print("Type 1, 2, 3 or 4 to choose an action")
-    while(action not in ["1", "2", "3", "4"]):
+    allowedChoices.append("4")
+
+    print("You can place "+str(player.getNumberOfCircularPawnsAvailable()) + " pawns.")
+    print("Type the number between () to choose an action")
+    while(action not in allowedChoices):
         action = input()
     print()
 
-    return actionChoice(int(action), player.getPlayerNumber(), board)
+    return actionChoice(int(action), player, board)
 
 """
 This function calls one of the possible actions of the player.
@@ -114,9 +136,9 @@ The function uses the following parameters:
 - board: board of the game
 Returns true if the action succeeded.
 """
-def actionChoice(action: int, player: int, board: Board) -> bool:     
+def actionChoice(action: int, player: Player, board: Board) -> bool:     
     if(action == 1): 
-        return placeCircularPawn(player, board)
+        return placeCircularPawn(player.getPlayerNumber(), board)
     elif(action == 2):
         return moveCircularPawn(player, board)
     elif(action == 3):
@@ -134,18 +156,21 @@ The function uses the following parameters:
 Returns True if the action succeeded.
 """
 def placeCircularPawn(player: int, board: Board) -> bool:
-        tile = 0
-        tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        x = 0
+        y = 0
+        xNumbersPossible = ["0", "1", "2"]
+        yNumbersPossible = ["0", "1", "2"]
         print("On which tile would you like to place a circular pawn ?")
-        print("Tiles are arranged as follow: \n")
-        print("1 2 3")
-        print("4 5 6")
-        print("7 8 9\n")
-        print("Type a number between 1 and 9")
+        print("line :")
 
-        while(tile not in tileNumbersPossible):
-            tile = input()
-        actionSuccess = board.placeCircularPawn(player, int(tile)-1)
+        while(x not in xNumbersPossible):
+            x = input()
+
+        print("column :")
+
+        while(y not in yNumbersPossible):
+            y = input()
+        actionSuccess = board.placeCircularPawn(player, int(x), int(y))
 
         if(actionSuccess == -1):
             print("\nYou don't have any circular pawns left!\n")
@@ -166,33 +191,40 @@ The function uses the following parameters:
 - board: board of the game.
 Returns True if the action succeeded.
 """
-def moveCircularPawn(player: int, board: Board) -> bool:
-        previousTile = 0
-        nextTile = 0
-        tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        print("Which one of your circular pawns would you like to move ?")
-        print("Select a tile to choose the circular pawn")
-        print("Tiles are arranged as follow: \n")
-        print("1 2 3")
-        print("4 5 6")
-        print("7 8 9\n")
-        print("Type a number between 1 and 9")
+def moveCircularPawn(player: Player, board: Board) -> bool:
+        circularPawnIdPossible = []
+        idPawn = 0
+        x = 0
+        y = 0
+        if((len(player.pawns) - 1) != 0):
+            for i in range(len(player.pawns)):
+                circularPawnIdPossible.append(str(i + 1))
+        else:
+            circularPawnIdPossible = ["1"]
 
-        while(previousTile not in tileNumbersPossible):
-            previousTile = input()
+        xNumbersPossible = ["0", "1", "2"]
+        yNumbersPossible = ["0", "1", "2"]
+
+        print("Which one of your circular pawns would you like to move ?")
+        print("Select the number of your circular pawn: 1, 2 or 3.")
+
+        while(idPawn not in circularPawnIdPossible):
+            idPawn = input()
 
         print("\nWhere would you like to move this pawn ?")
         print("Select a tile for the new location of the pawn (it can't be the current tile of the pawn)")
 
-        while(nextTile == previousTile or nextTile not in tileNumbersPossible):
-            nextTile = input()
+        print("line:")
+        while(x not in xNumbersPossible):
+            x = input()
 
-        actionSuccess = board.moveCircularPawn(player, int(previousTile)-1, int(nextTile)-1)
+        print("column:")
+        while(y not in yNumbersPossible):
+            y = input()
+
+        actionSuccess = board.moveCircularPawn(player.getPlayerNumber(), int(idPawn), int(x), int(y))
 
         if(actionSuccess == -1):
-            print("\nYou haven't selected one of your circular pawns!\n")
-            return False
-        elif(actionSuccess == -2):
             print("\nYou can't move your circular pawn onto the tile "+ nextTile+"!\n")
             return False
         else:
@@ -209,27 +241,33 @@ The function uses the following parameter:
 Returns True if the action succeeded.
 """
 def move2SquarePawns(board: Board) -> bool:
-        firstTile = 0
-        secondTile = 0
-        tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        x = [0,0]
+        y = [0,0]
+        xNumbersPossible = ["0", "1", "2"]
+        yNumbersPossible = ["0", "1", "2"]
         print("Which square pawn would you like to move first ?")
-        print("Select a tile to choose the square pawn")
-        print("Tiles are arranged as follow: \n")
-        print("1 2 3")
-        print("4 5 6")
-        print("7 8 9\n")
-        print("Type a number between 1 and 9")
+        
+        print("line :")
+        while(x[0] not in xNumbersPossible):
+            x[0] = input()
 
-        while(firstTile not in tileNumbersPossible):
-            firstTile = input()
+        print("column :")
+        while(y[0] not in yNumbersPossible):
+            y[0] = input()
+    
 
         print("\nWhat is the second square pawn that you would like to move?")
         print("Select a tile to choose the square pawn")
 
-        while(secondTile == firstTile or secondTile not in tileNumbersPossible):
-            secondTile = input()
+        print("line :")
+        while(x[1] not in xNumbersPossible):
+            x[1] = input()
 
-        actionSuccess = board.move2SquarePawns(int(firstTile)-1, int(secondTile)-1)
+        print("column :")
+        while(y[1] not in yNumbersPossible):
+            y[1] = input()
+
+        actionSuccess = board.move2SquarePawns(x, y)
 
         if(actionSuccess == -1):
             print("\nYou aren't allowed to do move square pawns!\n")
@@ -241,7 +279,10 @@ def move2SquarePawns(board: Board) -> bool:
             print("\nThe first tile you chose can't move!\n")
             return False
         elif(actionSuccess == -4):
-            print("\nThe second tile you chose can't move!\n")
+            print("\nYour two tiles are not align with each other!\n")
+            return False
+        elif(actionSuccess == -5):
+            print("\nYou can't move this two tiles like this!\n")
             return False
         else:
             print("\nSuccess!\n")
@@ -256,20 +297,26 @@ The function uses the following parameter:
 Returns True if the action succeeded.
 """
 def moveSquarePawn(board: Board) -> bool:
-        tile = 0
-        tileNumbersPossible = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        print("To move a square pawn, select a tile that contains a square pawn and that is next to the empty tile")
-        print("Tiles are arranged as follow: \n")
-        print("1 2 3")
-        print("4 5 6")
-        print("7 8 9\n")
-        print("Type a number between 1 and 9")
+        x = 0
+        y = 0
+        xNumbersPossible = ["0", "1", "2"]
+        yNumbersPossible = ["0", "1", "2"]
 
-        while(tile not in tileNumbersPossible):
-            tile = input()
-        
-        actionSuccess = board.moveSquarePawn(int(tile)-1)
-        if(not actionSuccess):
+        print("To move a square pawn, select a tile that contains a square pawn and that is next to the empty tile")
+        print("line :")
+        while(x not in xNumbersPossible):
+            x = input()
+
+        print("column :")
+        while(y not in xNumbersPossible):
+            y = input()
+
+        actionSuccess = board.moveSquarePawn(int(x), int(y))
+
+        if(actionSuccess == -1):
+            print("\nYou aren't allowed to reverse the movement your opponent did on their previous turn!\n")
+            return False
+        elif(actionSuccess == -2):
             print("\nYou can't move this tile!\n")
             return False
         else: 

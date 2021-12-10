@@ -10,9 +10,12 @@ class CircularPawn:
      - playerNumber: number of the player who owns the pawn, playerNumber = 0 or 1
      - color: color of the circular pawn
     """
-    def __init__(self, playerNumber: int = 0, color: bool = WHITE_PAWN) -> None:
+    def __init__(self, playerNumber: int = 0, color: bool = WHITE_PAWN, id: int = 0, x: int=0, y: int=0) -> None:
         self.playerNumber = playerNumber
         self.color = color
+        self.id = id
+        self.x = x
+        self.y = y
 
     # returns the color of the pawn
     def getColor(self) -> bool:

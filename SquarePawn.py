@@ -25,9 +25,10 @@ class SquarePawn:
     - playerNumber: number of the player who owns the circular pawn, playerNumber = 0 or 1
     - color: color of the new circular pawn 
     """
-    def setNewCircularPawn(self,  playerNumber: int = 0, color: bool = WHITE_PAWN) -> None:
+    def setNewCircularPawn(self,  playerNumber: int = 0, color: bool = WHITE_PAWN, x: int = 0, y: int = 0, idCircularPawn: int =0) -> None:
         if(color is not None):
-            self.circularPawn = CircularPawn(playerNumber, color)
+            self.circularPawn = CircularPawn(playerNumber, color, idCircularPawn, x, y)
+            return self.circularPawn
         else:
             self.circularPawn = None
     

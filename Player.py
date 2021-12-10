@@ -6,17 +6,22 @@ class Player:
     """ 
     Instanciate a player with the following parameters:
      - playerNumber: number of the player, playerNumber = 0 or 1
-     - color: color of the player
+     - color: color of the player (white or black)
+     - pawns: table of the player's pawn on the board
     """
     def __init__(self, playerNumber: int = 0, color: bool = WHITE_PAWN) -> None:
         self.playerNumber = playerNumber
         self.color = color
-        # number of circular pawns the player can place onto the board
-        self.numberOfCirularPawns = 3
+        self.pawns = []
+
+        """
+        for i in range(3):
+            circularPawn = CircularPawn(self.playerNumber, self.color, i+1)
+            self.pawns.append(circularPawn)"""
 
     # returns true if the player has a circular pawn available
     def isCircularPawnAvailable(self) -> bool:
-        return self.numberOfCirularPawns > 0
+        return len(self.pawns) < 3
     
     """
     This function represents the action of placing a circular pawn.
@@ -24,14 +29,13 @@ class Player:
     the color of the circular pawn.
     """
     def placeCircularPawn(self) -> bool: 
-        self.numberOfCirularPawns -= 1
         return self.color
     
     # returns the number of circular pawns the player hasn't placed on the board
-    def getNumberOfCircularPawns(self) -> int:
-        return self.numberOfCirularPawns
+    def getNumberOfCircularPawnsAvailable(self) -> int:
+        return 3 - len(self.pawns)
 
-    # retutns the player number
+    # returns the player number
     def getPlayerNumber(self) -> int:
         return self.playerNumber
     

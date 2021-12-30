@@ -1,32 +1,14 @@
 from Board import Board
-from Constants import WHITE_PAWN
 from Player import Player
 from Constants import BLACK_PAWN, WHITE_PAWN
+from Node import Node
+import copy;
+import math;
+import numpy as np;
+import pygame, sys
+import random;
 
 # Contains the main function of the programm
-
-def main() -> None:
-    playerColor = None
-    player1 = None
-    player2 = None
-
-    # Asks what color the first player wants
-    while(playerColor != "1" and playerColor != "2"):
-        playerColor = input("Player 1 is white (1) or black (2)? (Type 1 or 2)\n")
-        print()
-
-    # Creates the players
-    if(playerColor == "1"):
-        player1 = Player(0, WHITE_PAWN)
-        player2 = Player(1, BLACK_PAWN)
-        print("Player 1 is white \nPlayer 2 is black\n")
-    else: 
-        player1 = Player(0, BLACK_PAWN)
-        player2 = Player(1, WHITE_PAWN)
-        print("Player 1 is black\nPlayer 2 is white\n")
-
-    # runs the game
-    runGame(Board(player1, player2), player1, player2)
 
 
 """
@@ -35,31 +17,79 @@ The function uses the following parameters:
 - board: Board of the game
 - player1: first player of the game
 - player2: second player of the game.
+- modeGame: 
+    -1: Player VS Player
+    -2: Player VS IA
+    -3: IA VS IA
 """
-def runGame(board: Board, player1: Player, player2: Player) -> None:
+def runGame(board: Board, player1: Player, player2: Player, modeGame: int = 0) -> None:
     # This function runs untill a player wins.
-    while(1):
-        # Asks what the first player wants to do
-        actionDone = False
-        while(not actionDone):
-            if(board.isMove2SquarePawnsPossible()):
-                actionDone = twoSquarePawnsPossiblePlayerChoices(player1, board)
-            else: 
-                actionDone = twoSquarePawnsImpossiblePlayerChoices(player1, board)
-        # check if a player has wone
-        if(checkWinner(board)):
-            break
-        
-        # Asks what the second player wants to do
-        actionDone = False
-        while(not actionDone):
-            if(board.isMove2SquarePawnsPossible()):
-                actionDone = twoSquarePawnsPossiblePlayerChoices(player2, board)
-            else: 
-                actionDone = twoSquarePawnsImpossiblePlayerChoices(player2, board)
-        # check if a player has wone
-        if(checkWinner(board)):
-            break
+    #Player VS Player
+    if(modeGame == 1):
+        while(1):
+            # Asks what the first player wants to do
+            actionDone = False
+            while(not actionDone):
+                if(board.isMove2SquarePawnsPossible()):
+                    actionDone = twoSquarePawnsPossiblePlayerChoices(player1, board)
+                else: 
+                    actionDone = twoSquarePawnsImpossiblePlayerChoices(player1, board)
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
+            
+            # Asks what the second player wants to do
+            actionDone = False
+            while(not actionDone):
+                if(board.isMove2SquarePawnsPossible()):
+                    actionDone = twoSquarePawnsPossiblePlayerChoices(player2, board)
+                else: 
+                    actionDone = twoSquarePawnsImpossiblePlayerChoices(player2, board)
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
+    #Player VS Ia
+    elif(modeGame == 2):
+        while(1):
+            # Asks what the first player wants to do
+            actionDone = False
+            while(not actionDone):
+                if(board.isMove2SquarePawnsPossible()):
+                    actionDone = twoSquarePawnsPossiblePlayerChoices(player1, board)
+                else: 
+                    actionDone = twoSquarePawnsImpossiblePlayerChoices(player1, board)
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
+            
+            # Asks what the second player wants to do
+            actionDone = False
+            while(not actionDone):
+                actionDone = IAChoices(player2, player1, board)
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
+    else:
+        while(1):
+            # Asks what the first player wants to do
+            actionDone = False
+            while(not actionDone):
+                actionDone = IAChoices(player1, player2, board)
+            if(actionDone):
+                board.printBoard()
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
+            
+            # Asks what the IA wants to do
+            actionDone = False
+            while(not actionDone):
+                actionDone = IAChoices(player2, player1, board)
+            if(actionDone):
+                board.printBoard()
+            # check if a player has wone
+            if(checkWinner(board) != -1):
+                break
 
 """
 This function is used when the player has 2 possible actions when they begin.
@@ -127,6 +157,229 @@ def twoSquarePawnsPossiblePlayerChoices(player: Player = None, board: Board = No
     print()
 
     return actionChoice(int(action), player, board)
+
+    """
+This function is used when the player has 4 possible actions during his turn.
+The function uses the following parameters:
+- player: IA who choices an action
+- board: board of the game.
+Returns true if the action of the player succeeded.
+"""
+def IAChoices(player: Player = None, opponent: Player = None, board: Board = None) -> bool:
+    print("tour de l'ia")
+    copy_player = copy.deepcopy(player)
+    copy_opponent = copy.deepcopy(opponent)
+
+    node = Node(3, copy_player, copy_opponent, board)
+
+    v = MinMaxPL(node, node.depth, player, opponent)
+    best_action = []
+    for i in range(len(node.child)):
+        #print("VICTOIRE")
+        #print(v)
+        #print("HEY")
+        print(node.child[i].action.num_action)
+        print(node.child[i].value)
+        if ((node.child[i].value == v) and (node.child[i].board.checkIfWinner() != opponent.playerNumber)):
+            best_action.append(node.child[i])
+        if (node.child[i].board.checkIfWinner() == 0 and node.child[i].board.checkIfWinner() == 1):
+            best_action.append(node.child[i])
+                       
+    #print("INTERIEUR BEST ACTION")
+    #for coucou in best_action:
+        #print(coucou.action.num_action)
+        #print(coucou.value)
+
+    if (node.child[i].board.checkIfWinner() == player.playerNumber):
+        rand_child = node.child[i]
+
+    elif len(best_action) > 1:
+        rand_child = random.choice(best_action)
+
+    else:
+        rand_child = best_action[0]
+    
+    #Place a pawn
+    if rand_child.action.num_action == 1:
+        if(board.placeCircularPawn(player.playerNumber, rand_child.action.x, rand_child.action.y) == 0):
+            return True;
+    #Move a pawn
+    if rand_child.action.num_action == 2:
+            if rand_child.action.id_pawn == 1:
+                if(board.moveCircularPawn(player.playerNumber, 1, rand_child.action.x, rand_child.action.y) == 0):
+                    return True
+            if rand_child.action.id_pawn == 2:
+                if(board.moveCircularPawn(player.playerNumber, 2, rand_child.action.x, rand_child.action.y) == 0):
+                    return True
+            if rand_child.action.id_pawn == 3:
+                if(board.moveCircularPawn(player.playerNumber, 3, rand_child.action.x, rand_child.action.y) == 0):
+                    return True
+    #Move a square pawn
+    if rand_child.action.num_action == 3:
+        if(board.moveSquarePawn(rand_child.action.x, rand_child.action.y) == 0):
+            return True
+    #Move two square pawns
+    if rand_child.action.num_action == 4:
+        if(board.move2SquarePawns(rand_child.action.table_x, rand_child.action.table_y) == 0):
+            return True
+
+           
+def eval_position_pawn(player: Player = None):
+    #Values of the tiles depending of their position
+        position_pts= np.array([[2,1,2],[1,3,1],[2,1,2]])
+        res = 0
+        if(len(player.pawns) > 0):
+            #two or more pawns
+            if(len(player.pawns) - 1 > 0):
+                for i in range(len(player.pawns)):
+                    res += position_pts[player.pawns[i].x, player.pawns[i].y]
+            #one pawn
+            else:
+                res += position_pts[player.pawns[0].x, player.pawns[0].y]
+        return res
+
+"""
+This function send back +1 if the player have more pawns than his/her opponent, -1 if he/she has less, otherwise zero.
+The function uses the following parameters:
+- board: Board of the game.
+- player: the player.
+- other_player: the opponent.
+"""     
+def eval_nb_pawn(player: Player = None, other_player: Player = None, board: Board = None):
+#J'ai effacé un truc
+    nb_pawn_player = len(player.pawns)
+    nb_pawn_opponent = len(other_player.pawns)
+                        
+    if(nb_pawn_player > nb_pawn_opponent):
+        return 1
+        
+    elif(nb_pawn_player < nb_pawn_opponent):
+        return -1
+        
+    else:
+        return 0  
+
+
+#cette fonction evalue le jeu en renvoyant +2 si un pion du joueur se situe entre
+#2 pions de l'adversaire le bloquant ainsi
+def eval_pawn_between(player: Player = None, board: Board = None):
+    res = 0
+    for i in range(3):
+    #3 first lines
+        if (board._get_board_by_coordinate(1,i) != board.emptyTile and board._get_circularPawn_by_board(1,i) != None 
+               and board._get_circularPawn_by_board(1,i).color == player.color and
+               board._get_board_by_coordinate(0,i) != board.emptyTile  and board._get_circularPawn_by_board(0,i) != None 
+               and board._get_circularPawn_by_board(0,i).color != player.color and
+               board._get_board_by_coordinate(2,i) != board.emptyTile  and board._get_circularPawn_by_board(2,i) != None 
+               and board._get_circularPawn_by_board(2,i).color != player.color):
+                   res = 2
+    #3 first columns         
+        if (board._get_board_by_coordinate(i,1) != board.emptyTile and board._get_circularPawn_by_board(i,1) != None 
+               and board._get_circularPawn_by_board(i,1).color == player.color and
+               board._get_board_by_coordinate(i,0) != board.emptyTile and board._get_circularPawn_by_board(i,0) != None 
+               and board._get_circularPawn_by_board(i,0).color != player.color and
+               board._get_board_by_coordinate(i,2) != board.emptyTile and board._get_circularPawn_by_board(i,2) != None 
+               and board._get_circularPawn_by_board(i,2).color != player.color):
+                   res = 2
+    #left diagonale
+    if (board._get_board_by_coordinate(1,1) != board.emptyTile and board._get_circularPawn_by_board(1,1) != None 
+               and board._get_circularPawn_by_board(1,1).color == player.color and
+               board._get_board_by_coordinate(0,0) != board.emptyTile and board._get_circularPawn_by_board(0,0) != None 
+               and board._get_circularPawn_by_board(0,0).color != player.color and
+               board._get_board_by_coordinate(2,2) != board.emptyTile and board._get_circularPawn_by_board(2,2) != None 
+               and board._get_circularPawn_by_board(2,2).color != player.color):
+                   res = 2
+
+    #right diagonale
+    if (board._get_board_by_coordinate(1,1) != board.emptyTile and board._get_circularPawn_by_board(1,1) != None 
+               and board._get_circularPawn_by_board(1,1).color == player.color and
+               board._get_board_by_coordinate(0,2) != board.emptyTile and board._get_circularPawn_by_board(0,2) != None 
+               and board._get_circularPawn_by_board(0,2).color != player.color and
+               board._get_board_by_coordinate(2,0) != board.emptyTile and board._get_circularPawn_by_board(2,0) != None 
+               and board._get_circularPawn_by_board(2,0).color != player.color):
+                   res = 2
+    return res
+
+def eval_opposition_edge_pawn(player: Player = None, board: Board = None):
+    res = 0
+       
+    for i in range(3):
+        #pawn player on the first column
+        if (board._get_board_by_coordinate(0,i) != board.emptyTile and board._get_circularPawn_by_board(0,i) != None 
+           and board._get_circularPawn_by_board(0,i).color == player.color and
+               board._get_board_by_coordinate(1,i) != board.emptyTile and board._get_circularPawn_by_board(1,i) != None 
+               and board._get_circularPawn_by_board(1,i).color != player.color and
+               board._get_board_by_coordinate(2,i) != board.emptyTile and board._get_circularPawn_by_board(2,i) != None 
+               and board._get_circularPawn_by_board(2,i).color != player.color):
+                   res = 1
+        #pawn player on the last column           
+        if (board._get_board_by_coordinate(2,i) != board.emptyTile and board._get_circularPawn_by_board(2,i) != None 
+               and board._get_circularPawn_by_board(2,i).color == player.color and
+               board._get_board_by_coordinate(1,i) != board.emptyTile and board._get_circularPawn_by_board(1,i) != None 
+               and board._get_circularPawn_by_board(1,i).color != player.color and
+               board._get_board_by_coordinate(0,i) != board.emptyTile and board._get_circularPawn_by_board(0,i) != None 
+               and board._get_circularPawn_by_board(0,i).color != player.color):
+                   res = 1
+        #pawn player on the first line    
+        if (board._get_board_by_coordinate(i,0) != board.emptyTile  and board._get_circularPawn_by_board(i,0) != None 
+               and board._get_circularPawn_by_board(i,0).color == player.color and
+               board._get_board_by_coordinate(i,1) != board.emptyTile  and board._get_circularPawn_by_board(i,1) != None 
+               and board._get_circularPawn_by_board(i,1).color != player.color and
+               board._get_board_by_coordinate(i,2) != board.emptyTile  and board._get_circularPawn_by_board(i,2) != None 
+               and board._get_circularPawn_by_board(i,2).color != player.color):
+                   res = 1
+        #pawn player on the last line           
+        if (board._get_board_by_coordinate(i,2) != board.emptyTile and board._get_circularPawn_by_board(i,2) != None 
+               and board._get_circularPawn_by_board(i,2).color == player.color and
+               board._get_board_by_coordinate(i,1) != board.emptyTile and board._get_circularPawn_by_board(i,1) != None 
+               and board._get_circularPawn_by_board(i,1).color != player.color and
+               board._get_board_by_coordinate(i,0) != board.emptyTile and board._get_circularPawn_by_board(i,0) != None 
+               and board._get_circularPawn_by_board(i,0).color != player.color):
+                   res = 1
+    return res
+  
+def evaluation(player_max: Player = None, player_min: Player = None, board: Board = None):
+        
+        if(board.checkIfWinner() == player_max.playerNumber):
+            return 500
+
+        if(board.checkIfWinner() == player_min.playerNumber):
+            return -500
+        
+        else:
+            poids1 = eval_position_pawn(player_max)
+            poids1 += eval_nb_pawn(player_max, player_min, board)
+            poids1 += eval_pawn_between(player_max, board)
+            poids1 += eval_opposition_edge_pawn(player_max, board)
+            return  poids1    
+                
+##======================================================================#
+##=======================Function MinMax================================#
+##======================================================================# 
+                   
+def MaxValue(node, depth, player, other_player):
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = -math.inf
+    for i in range (len(node.child)):
+        node.value = max(node.value, MinValue(node.child[i], depth-1, player, other_player))
+         
+    return node.value
+
+def MinValue(node, depth, player, other_player):
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = math.inf
+    for i in range (len(node.child)):
+        node.value = min(node.value, MaxValue(node.child[i], depth-1, player, other_player))
+        
+    return node.value
+                       
+def MinMaxPL(node, depth, player, other_player):
+    node.value = MaxValue(node, depth, player, other_player)
+    return node.value 
 
 """
 This function calls one of the possible actions of the player.
@@ -225,7 +478,7 @@ def moveCircularPawn(player: Player, board: Board) -> bool:
         actionSuccess = board.moveCircularPawn(player.getPlayerNumber(), int(idPawn), int(x), int(y))
 
         if(actionSuccess == -1):
-            print("\nYou can't move your circular pawn onto the tile "+ nextTile+"!\n")
+            print("\nYou can't move your circular pawn onto the coordinate ["+ x + "]["+ y + "] !\n")
             return False
         else:
             print("\nSuccess!\n")
@@ -325,17 +578,15 @@ def moveSquarePawn(board: Board) -> bool:
 
 
 # returns true if a player has wone
-def checkWinner(board) -> bool: 
+def checkWinner(board) -> int: 
     winner = board.checkIfWinner()
     if(winner == 0):
         print("\nPlayer 1 is the winner!")
         board.printBoard()
-        return True
+        return 0
     elif(winner == 1):
         board.printBoard()
         print("\nPlayer 2 is the winner!")
-        return True
+        return 1
     else:
-        return False
-
-main()
+        return -1

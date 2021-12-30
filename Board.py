@@ -3,6 +3,7 @@ from Tile import Tile
 from Player import Player
 import math
 import numpy as np
+import copy
 
 class Board:
     """ 
@@ -67,6 +68,7 @@ class Board:
         if(player.isCircularPawnAvailable()):
             if(tile.isSquarePawnSet() and not tile.isCircularPawnSet()):
                 self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = None
                 idCircularPawn = len(player.pawns) + 1;
                 newCircularPawn = tile.setNewCircularPawn(playerNumber, player.color, x, y, idCircularPawn)
                 player.pawns.append(newCircularPawn)
@@ -108,24 +110,111 @@ class Board:
     - tileNumber, number of the tile that contains the square pawn we would like to move, tilNumber = a number between 0 and 8
     The function returns true if the square pawn was succesfully moved.
     """
-    def moveSquarePawn(self, x: int = 0, y: int = 0) -> int:
+    def moveSquarePawn(self, x: int = 0, y: int = 0, twoSquare: bool = False) -> int:
         tile = self.board[x][y]
 
-        diff = math.fabs(tile.idTile - self.emptyTile.idTile)
-
-        if([self.emptyTile, tile] == self.squarePawnMoved):
+        #can't reverse opponent's movement
+        if([self.emptyTile, tile] == self.squarePawnMoved and twoSquare == False):
             return -1
 
-        if(diff == 1 or diff == 3):
-            self.twoSquarePawnsMoved = None
-            self.squarePawnMoved = [tile, self.emptyTile]
-            squarePawn = tile.getSquarePawn()
-            tile.setSquarePawn(None)
-            self.emptyTile.setSquarePawn(squarePawn)
-            self.emptyTile = tile
-            return 0
+        if(self.emptyTile.idTile == 1):
+            if(self.board[x][y].idTile in {2, 4}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 2):
+            if(self.board[x][y].idTile in {1, 3, 4, 5, 6}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 3):
+            if(self.board[x][y].idTile in {2, 6}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 4):
+            if(self.board[x][y].idTile in {1, 2, 5, 7, 8}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 5):
+            if(self.board[x][y].idTile in {2, 4, 6, 8}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 6):
+            if(self.board[x][y].idTile in {2, 3, 5, 8, 9}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 7):
+            if(self.board[x][y].idTile in {4, 8}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
+        elif(self.emptyTile.idTile == 8):
+            if(self.board[x][y].idTile in {4, 5, 6, 7, 9}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
         else:
-            return -2
+            if(self.board[x][y].idTile in {6, 8}):
+                self.twoSquarePawnsMoved = None
+                self.squarePawnMoved = [tile, self.emptyTile]
+                squarePawn = tile.getSquarePawn()
+                tile.setSquarePawn(None)
+                self.emptyTile.setSquarePawn(squarePawn)
+                self.emptyTile = tile
+                return 0
+            else:
+                return -2
 
     # returns true if the player can move 2 square pawns on his turn
     def isMove2SquarePawnsPossible(self) -> bool:
@@ -143,10 +232,9 @@ class Board:
     - -4 if the second selected square pawn can't be moved to the position of the first tile.
     """
     def move2SquarePawns(self, x: list = [0, 0], y: list = [0, 0]) -> int:
+        copy_board = copy.deepcopy(self)
         firstTile = self.board[int(x[0]), int(y[0])]
         secondTile = self.board[int(x[1]), int(y[1])]
-
-        self.squarePawnMoved = None
 
         if(not self.isMove2SquarePawnsPossible()):
             return -1
@@ -154,27 +242,24 @@ class Board:
         if([firstTile, secondTile] == self.twoSquarePawnsMoved):
             return -2
 
-        diff = math.fabs(firstTile.idTile - self.emptyTile.idTile)
-        if(diff != 1 and diff !=3):
+        if(copy_board.moveSquarePawn(int(x[0]), int(y[0]), True) != 0):
             return -3
 
-        diff = math.fabs(firstTile.idTile - secondTile.idTile)
-        if(diff != 1 and diff !=3):
+        if(copy_board.moveSquarePawn(secondTile.x, secondTile.y, True) != 0):
             return -4
 
         if(not((secondTile.x == firstTile.x and secondTile.x == self.emptyTile.x) or
             (secondTile.y == firstTile.y and secondTile.y == self.emptyTile.y))):
             return -5
 
-        self.twoSquarePawnsMoved = None
         firstSquarePawn = firstTile.getSquarePawn()
         secondSquarePawn = secondTile.getSquarePawn()
         firstTile.setSquarePawn(secondSquarePawn)
         secondTile.setSquarePawn(None)
         self.emptyTile.setSquarePawn(firstSquarePawn)
-
         self.twoSquarePawnsMoved = [firstTile, self.emptyTile]
         self.emptyTile = secondTile
+        self.squarePawnMoved = None
 
     # this functions prints the board on the consol used to run the programm 
     def printBoard(self) -> None:
@@ -231,9 +316,21 @@ class Board:
                     pawn = tile.getCircularPawn()
                     circularPawns[pawn.getPlayerNumber()].append(tile.getIdTile())
 
-            if(circularPawns[0] in victoryConditions):
-                return 0
-            elif(circularPawns[1] in victoryConditions):
-                return 1
-            
+        if(circularPawns[0] in victoryConditions):
+            return 0
+        elif(circularPawns[1] in victoryConditions):
+            return 1
+        else: 
             return -1
+
+    def _get_two_square_pawn_moved(self):
+        return self.twoSquarePawnsMoved
+
+    def _get_square_pawn_moved(self):
+        return self.squarePawnMoved
+
+    def _get_board_by_coordinate(self, x: int = None, y: int = None):
+        return self.board[x,y]
+
+    def _get_circularPawn_by_board(self, x: int = None, y: int = None):
+        return self.board[x,y].squarePawn.circularPawn

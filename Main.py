@@ -5,7 +5,6 @@ from Node import Node
 import copy;
 import math;
 import numpy as np;
-import pygame, sys
 import random;
 
 # Contains the main function of the programm

@@ -201,7 +201,7 @@ def IAChoices(player: Player = None, opponent: Player = None, board: Board = Non
     #Place a pawn
     if rand_child.action.num_action == 1:
         if(board.placeCircularPawn(player.playerNumber, rand_child.action.x, rand_child.action.y) == 0):
-            return True;
+            return True
     #Move a pawn
     if rand_child.action.num_action == 2:
             if rand_child.action.id_pawn == 1:

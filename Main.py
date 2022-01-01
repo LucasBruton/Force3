@@ -441,6 +441,47 @@ def MinMaxPL(node, depth, player, other_player):
     node.value = MaxValue(node, depth, player, other_player)
     return node.value 
 
+##======================================================================#
+##=======================Fonction MinMax utilisant alpha_beta===========#
+##============================Fonction non retenue======================#
+"""
+def MaxValue(node, depth, player, other_player, alpha, beta):
+    
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = -math.inf
+    for i in range (len(node.child)):
+         
+        node.value = max(node.value, MinValue(node.child[i], depth-1, player, other_player, alpha, beta))
+       
+        if node.value >= beta:
+            return node.value
+        alpha = max(alpha, node.value)
+        
+    return node.value
+
+def MinValue(node, depth, player, other_player, alpha, beta):
+    
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):  
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = math.inf
+    for i in range (len(node.child)):
+        
+        node.value = min(node.value, MaxValue(node.child[i], depth-1, player, other_player, alpha, beta))
+        
+        if node.value <= alpha:
+            return node.value
+        beta = min(beta, node.value)
+    return node.value
+                
+        
+def MinMaxPL(node, depth, player, other_player):
+    node.value = MaxValue(node,depth, player, other_player, -math.inf, math.inf)
+    return node.value 
+"""
+
 """
 This function calls one of the possible actions of the player.
 The function uses the following parameters: 

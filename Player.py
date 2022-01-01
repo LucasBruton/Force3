@@ -7,7 +7,7 @@ class Player:
     Instanciate a player with the following parameters:
      - playerNumber: number of the player, playerNumber = 0 or 1
      - color: color of the player (white or black)
-     - pawns: array of the player's pawn on the board
+     - pawns: table of the player's pawn on the board
     """
     def __init__(self, playerNumber: int = 0, color: bool = WHITE_PAWN) -> None:
         self.playerNumber = playerNumber

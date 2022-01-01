@@ -7,7 +7,7 @@ def party():
     decisionPlayer = 0
     decisionPossibilities = ["1", "2", "3"]
     print("What mode of game do you want ?")
-    print("-(1): Player VS Player\n-(2): Player VS IA\n-(3): IA VS IA)")
+    print("-(1): Player VS Player\n-(2): Player VS IA\n-(3): IA VS IA")
     while decisionPlayer not in decisionPossibilities:
         decisionPlayer = input()
 

@@ -7,13 +7,13 @@ class EdgeAction():
     The function creates a board with 9 tiles and 8 square pawns placed 
     on top of every tile except the middle one.
     """
-    def __init__(self, num_action, x: int = None, y: int = None, table_x: list = None, table_y: list = None, id_pawn: int = None):
+    def __init__(self, num_action, x: int = None, y: int = None, id_pawn: int = None, table_x: list = None, table_y: list = None):
         self.num_action = num_action
         self.x = x                     
         self.y = y
+        self.id_pawn = id_pawn
         self.table_x = table_x
         self.table_y = table_y
-        self.id_pawn = id_pawn
 
     def _get_num_action(self):
         return self.num_action

@@ -129,7 +129,7 @@ class Board:
             else:
                 return -2
         elif(self.emptyTile.idTile == 2):
-            if(self.board[x][y].idTile in {1, 3, 4, 5, 6}):
+            if(self.board[x][y].idTile in {1, 3, 5}):
                 self.twoSquarePawnsMoved = None
                 self.squarePawnMoved = [tile, self.emptyTile]
                 squarePawn = tile.getSquarePawn()
@@ -150,7 +150,7 @@ class Board:
             else:
                 return -2
         elif(self.emptyTile.idTile == 4):
-            if(self.board[x][y].idTile in {1, 2, 5, 7, 8}):
+            if(self.board[x][y].idTile in {1, 5, 7}):
                 self.twoSquarePawnsMoved = None
                 self.squarePawnMoved = [tile, self.emptyTile]
                 squarePawn = tile.getSquarePawn()
@@ -172,7 +172,7 @@ class Board:
             else:
                 return -2
         elif(self.emptyTile.idTile == 6):
-            if(self.board[x][y].idTile in {2, 3, 5, 8, 9}):
+            if(self.board[x][y].idTile in {3, 5, 9}):
                 self.twoSquarePawnsMoved = None
                 self.squarePawnMoved = [tile, self.emptyTile]
                 squarePawn = tile.getSquarePawn()
@@ -194,7 +194,7 @@ class Board:
             else:
                 return -2
         elif(self.emptyTile.idTile == 8):
-            if(self.board[x][y].idTile in {4, 5, 6, 7, 9}):
+            if(self.board[x][y].idTile in {5, 7, 9}):
                 self.twoSquarePawnsMoved = None
                 self.squarePawnMoved = [tile, self.emptyTile]
                 squarePawn = tile.getSquarePawn()

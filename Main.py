@@ -2,11 +2,11 @@ from Board import Board
 from Player import Player
 from Constants import BLACK_PAWN, WHITE_PAWN
 from Node import Node
-import copy;
-import math;
-import numpy as np;
-import pygame, sys
-import random;
+import copy
+import math
+import numpy as np
+import random
+import time
 
 # Contains the main function of the programm
 
@@ -64,11 +64,19 @@ def runGame(board: Board, player1: Player, player2: Player, modeGame: int = 0) -
             
             # Asks what the second player wants to do
             actionDone = False
+            start = time.time()
             while(not actionDone):
                 actionDone = IAChoices(player2, player1, board)
+            """
+            end = time.time()
+            elapsed = end - start
+            print("Temps d'execution")
+            print(elapsed)
+            """
             # check if a player has wone
             if(checkWinner(board) != -1):
                 break
+    #IA VS IA
     else:
         while(1):
             # Asks what the first player wants to do
@@ -76,6 +84,7 @@ def runGame(board: Board, player1: Player, player2: Player, modeGame: int = 0) -
             while(not actionDone):
                 actionDone = IAChoices(player1, player2, board)
             if(actionDone):
+                print("tour de l'IA 1")
                 board.printBoard()
             # check if a player has wone
             if(checkWinner(board) != -1):
@@ -86,6 +95,7 @@ def runGame(board: Board, player1: Player, player2: Player, modeGame: int = 0) -
             while(not actionDone):
                 actionDone = IAChoices(player2, player1, board)
             if(actionDone):
+                print("tour de l'IA 2")
                 board.printBoard()
             # check if a player has wone
             if(checkWinner(board) != -1):
@@ -166,54 +176,75 @@ The function uses the following parameters:
 Returns true if the action of the player succeeded.
 """
 def IAChoices(player: Player = None, opponent: Player = None, board: Board = None) -> bool:
-    print("tour de l'ia")
-    copy_player = copy.deepcopy(player)
-    copy_opponent = copy.deepcopy(opponent)
-
-    node = Node(3, copy_player, copy_opponent, board)
-
+    node = Node(3, player, opponent, board)
+    """
+    print(player.playerNumber)
+    print("IMPRIME LES ENFANTS")
+    node.affiche()
+    """
     v = MinMaxPL(node, node.depth, player, opponent)
+    """
+    print("VICTOIRE")
+    print(v)
+    """
     best_action = []
     for i in range(len(node.child)):
-        #print("VICTOIRE")
-        #print(v)
-        #print("HEY")
+        """
+        print("ACTION")
         print(node.child[i].action.num_action)
+        print("VALUE")
         print(node.child[i].value)
-        if ((node.child[i].value == v) and (node.child[i].board.checkIfWinner() != opponent.playerNumber)):
+        """
+        if ((node.child[i].value == v) and (node.child[i].player.playerNumber != player.playerNumber) and (node.child[i].board.checkIfWinner() != opponent.playerNumber)):
+            """
+            print("TA RACE")
+            print(node.child[i].player.playerNumber)
+            """
             best_action.append(node.child[i])
+        
         if (node.child[i].board.checkIfWinner() == 0 and node.child[i].board.checkIfWinner() == 1):
             best_action.append(node.child[i])
-                       
-    #print("INTERIEUR BEST ACTION")
-    #for coucou in best_action:
-        #print(coucou.action.num_action)
-        #print(coucou.value)
-
+    """                
+    print("INTERIEUR BEST ACTION")
+    for coucou in best_action:
+        print(coucou.player.playerNumber)
+        print(coucou.value)
+    """
+    
+    """
     if (node.child[i].board.checkIfWinner() == player.playerNumber):
         rand_child = node.child[i]
-
-    elif len(best_action) > 1:
+    """
+    if len(best_action) > 1:
         rand_child = random.choice(best_action)
 
     else:
         rand_child = best_action[0]
-    
+    """
+    print("FUCKING RANDCHILD")
+    print(rand_child.action.num_action)
+    """
     #Place a pawn
     if rand_child.action.num_action == 1:
         if(board.placeCircularPawn(player.playerNumber, rand_child.action.x, rand_child.action.y) == 0):
             return True;
     #Move a pawn
     if rand_child.action.num_action == 2:
-            if rand_child.action.id_pawn == 1:
-                if(board.moveCircularPawn(player.playerNumber, 1, rand_child.action.x, rand_child.action.y) == 0):
-                    return True
-            if rand_child.action.id_pawn == 2:
-                if(board.moveCircularPawn(player.playerNumber, 2, rand_child.action.x, rand_child.action.y) == 0):
-                    return True
-            if rand_child.action.id_pawn == 3:
-                if(board.moveCircularPawn(player.playerNumber, 3, rand_child.action.x, rand_child.action.y) == 0):
-                    return True
+        """
+        print("FUCKING ID PAWN")
+        print(rand_child.action.id_pawn)
+        print(rand_child.action.x)
+        print(rand_child.action.y)
+        """
+        if rand_child.action.id_pawn == 1:
+            if(board.moveCircularPawn(player.playerNumber, 1, rand_child.action.x, rand_child.action.y) == 0):
+                return True
+        elif rand_child.action.id_pawn == 2:
+            if(board.moveCircularPawn(player.playerNumber, 2, rand_child.action.x, rand_child.action.y) == 0):
+                return True
+        elif rand_child.action.id_pawn == 3:
+            if(board.moveCircularPawn(player.playerNumber, 3, rand_child.action.x, rand_child.action.y) == 0):
+                return True
     #Move a square pawn
     if rand_child.action.num_action == 3:
         if(board.moveSquarePawn(rand_child.action.x, rand_child.action.y) == 0):
@@ -260,12 +291,16 @@ def eval_nb_pawn(player: Player = None, other_player: Player = None, board: Boar
         return 0  
 
 
-#cette fonction evalue le jeu en renvoyant +2 si un pion du joueur se situe entre
-#2 pions de l'adversaire le bloquant ainsi
+"""
+This function send back +2 if the player place one of its pawn between two pawns from its opponent.
+The function uses the following parameters:
+- player: the player.
+- board: Board of the game.
+"""
 def eval_pawn_between(player: Player = None, board: Board = None):
     res = 0
     for i in range(3):
-    #3 first lines
+    #if the player's pawn is between two opponent's pawns on the 3 first lines
         if (board._get_board_by_coordinate(1,i) != board.emptyTile and board._get_circularPawn_by_board(1,i) != None 
                and board._get_circularPawn_by_board(1,i).color == player.color and
                board._get_board_by_coordinate(0,i) != board.emptyTile  and board._get_circularPawn_by_board(0,i) != None 
@@ -273,7 +308,7 @@ def eval_pawn_between(player: Player = None, board: Board = None):
                board._get_board_by_coordinate(2,i) != board.emptyTile  and board._get_circularPawn_by_board(2,i) != None 
                and board._get_circularPawn_by_board(2,i).color != player.color):
                    res = 2
-    #3 first columns         
+    #Same on the 3 first columns         
         if (board._get_board_by_coordinate(i,1) != board.emptyTile and board._get_circularPawn_by_board(i,1) != None 
                and board._get_circularPawn_by_board(i,1).color == player.color and
                board._get_board_by_coordinate(i,0) != board.emptyTile and board._get_circularPawn_by_board(i,0) != None 
@@ -281,7 +316,7 @@ def eval_pawn_between(player: Player = None, board: Board = None):
                board._get_board_by_coordinate(i,2) != board.emptyTile and board._get_circularPawn_by_board(i,2) != None 
                and board._get_circularPawn_by_board(i,2).color != player.color):
                    res = 2
-    #left diagonale
+    #Same on the left diagonal
     if (board._get_board_by_coordinate(1,1) != board.emptyTile and board._get_circularPawn_by_board(1,1) != None 
                and board._get_circularPawn_by_board(1,1).color == player.color and
                board._get_board_by_coordinate(0,0) != board.emptyTile and board._get_circularPawn_by_board(0,0) != None 
@@ -290,7 +325,7 @@ def eval_pawn_between(player: Player = None, board: Board = None):
                and board._get_circularPawn_by_board(2,2).color != player.color):
                    res = 2
 
-    #right diagonale
+    #Same on the right diagonal
     if (board._get_board_by_coordinate(1,1) != board.emptyTile and board._get_circularPawn_by_board(1,1) != None 
                and board._get_circularPawn_by_board(1,1).color == player.color and
                board._get_board_by_coordinate(0,2) != board.emptyTile and board._get_circularPawn_by_board(0,2) != None 
@@ -298,6 +333,68 @@ def eval_pawn_between(player: Player = None, board: Board = None):
                board._get_board_by_coordinate(2,0) != board.emptyTile and board._get_circularPawn_by_board(2,0) != None 
                and board._get_circularPawn_by_board(2,0).color != player.color):
                    res = 2
+    return res
+
+"""
+This function send back +2 if the player place one of its pawn between two pawns from its opponent.
+The function uses the following parameters:
+- player: the player.
+- board: Board of the game.
+"""
+def eval_pawn_alignment(player: Player = None):
+    res = 0
+
+    if(len(player.pawns) >= 2):
+        #If the pawn 1 and pawn 2 are on the same line or the same colum, return +1
+        if(player.pawns[0].x == player.pawns[1].x or player.pawns[0].y == player.pawns[1].y):
+            res = 1
+        #Left diagonal with pawn 1 in [0][0] and pawn 2 somewhere in this diagonal
+        if(player.pawns[0].x == 0 and player.pawns[0].y == 0):
+            if(player.pawns[1].x == 1 and player.pawns[1].y == 1) or (player.pawns[1].x == 2 and player.pawns[1].y == 2):
+                res = 1
+        #Left diagonal with pawn 1 in [2][2] and pawn 2 somewhere in this diagonal
+        elif(player.pawns[0].x == 2 and player.pawns[0].y == 2):
+            if(player.pawns[1].x == 1 and player.pawns[1].y == 1) or (player.pawns[1].x == 0 and player.pawns[1].y == 0):
+                res = 1
+        #Right diagonal with pawn 1 in [0][2] and pawn 2 somewhere in this diagonal
+        elif(player.pawns[0].x == 0 and player.pawns[0].y == 2):
+            if(player.pawns[1].x == 1 and player.pawns[1].y == 1) or (player.pawns[1].x == 2 and player.pawns[1].y == 0):
+                res = 1
+        #Right diagonal with pawn 1 in [2][2] and pawn 2 somewhere in this diagonal
+        elif(player.pawns[0].x == 2 and player.pawns[0].y == 0):
+            if(player.pawns[1].x == 1 and player.pawns[1].y == 1) or (player.pawns[1].x == 0 and player.pawns[1].y == 2):
+                res = 1
+        #Any diagonal when the pawn 1 is in the middle [1][1]
+        elif(player.pawns[0].x == 1 and player.pawns[0].y == 1):
+            if(player.pawns[1].x == 0 and player.pawns[1].y == 0) or (player.pawns[1].x == 0 and player.pawns[1].y == 2) or (player.pawns[1].x == 2 and player.pawns[1].y == 0) or (player.pawns[1].x == 2 and player.pawns[1].y == 2):
+                res = 1
+
+    elif(len(player.pawns) == 3):
+        #If pawns are on the same line or the same colum, return +1
+        if((player.pawns[0].x == player.pawns[1].x or player.pawns[0].x == player.pawns[2].x or player.pawns[1].x == player.pawns[2].x) or 
+        (player.pawns[0].y == player.pawns[1].y or player.pawns[0].y == player.pawns[2].y or player.pawns[1].y == player.pawns[2].y)):
+            res = 1
+        #Left diagonal with pawn 1 or 2 in [0][0] and pawn 3 somewhere in this diagonal
+        if(player.pawns[0].x == 0 and player.pawns[0].y == 0) or (player.pawns[1].x == 0 and player.pawns[1].y == 0):
+            if(player.pawns[2].x == 1 and player.pawns[2].y == 1) or (player.pawns[2].x == 2 and player.pawns[2].y == 2):
+                res = 1
+        #Left diagonal with pawn 1 or 2 in [2][2] and pawn 3 somewhere in this diagonal
+        elif(player.pawns[0].x == 2 and player.pawns[0].y == 2) or (player.pawns[1].x == 2 and player.pawns[1].y == 2):
+            if(player.pawns[2].x == 1 and player.pawns[2].y == 1) or (player.pawns[2].x == 0 and player.pawns[2].y == 0):
+                res = 1
+        #Right diagonal with pawn 1 or 2 in [0][2] and pawn 3 somewhere in this diagonal
+        elif(player.pawns[0].x == 0 and player.pawns[0].y == 2) or (player.pawns[1].x == 0 and player.pawns[1].y == 2):
+            if(player.pawns[2].x == 1 and player.pawns[2].y == 1) or (player.pawns[2].x == 2 and player.pawns[2].y == 0):
+                res = 1
+        #Right diagonal with pawn 1 or 2 in [2][2] and pawn 3 somewhere in this diagonal
+        elif(player.pawns[0].x == 2 and player.pawns[0].y == 0) or (player.pawns[1].x == 2 and player.pawns[1].y == 0):
+            if(player.pawns[2].x == 1 and player.pawns[2].y == 1) or (player.pawns[2].x == 0 and player.pawns[2].y == 2):
+                res = 1
+        #Any diagonal when the pawn 1 or 2 is in the middle [1][1]
+        elif(player.pawns[0].x == 1 and player.pawns[0].y == 1) or (player.pawns[1].x == 1 and player.pawns[1].y == 1):
+            if(player.pawns[2].x == 0 and player.pawns[2].y == 0) or (player.pawns[2].x == 0 and player.pawns[2].y == 2) or (player.pawns[2].x == 2 and player.pawns[2].y == 0) or (player.pawns[2].x == 2 and player.pawns[2].y == 2):
+                res = 1
+
     return res
 
 def eval_opposition_edge_pawn(player: Player = None, board: Board = None):
@@ -347,16 +444,16 @@ def evaluation(player_max: Player = None, player_min: Player = None, board: Boar
             return -500
         
         else:
-            poids1 = eval_position_pawn(player_max)
-            poids1 += eval_nb_pawn(player_max, player_min, board)
-            poids1 += eval_pawn_between(player_max, board)
-            poids1 += eval_opposition_edge_pawn(player_max, board)
-            return  poids1    
+            score = eval_position_pawn(player_max)
+            score += eval_nb_pawn(player_max, player_min, board)
+            score += eval_pawn_between(player_max, board)
+            score += eval_opposition_edge_pawn(player_max, board)
+            score += eval_pawn_alignment(player_max)
+            return  score    
                 
 ##======================================================================#
 ##=======================Function MinMax================================#
-##======================================================================# 
-                   
+##======================================================================#               
 def MaxValue(node, depth, player, other_player):
     if(node.board.checkIfWinner() != -1 or depth == 0 ):
         node.value = evaluation(player, other_player, node.board)
@@ -380,7 +477,47 @@ def MinValue(node, depth, player, other_player):
 def MinMaxPL(node, depth, player, other_player):
     node.value = MaxValue(node, depth, player, other_player)
     return node.value 
+##======================================================================#
+##=======================Fonction MinMax utilisant alpha_beta===========#
+##============================Fonction non retenue======================#
+"""
+def MaxValue(node, depth, player, other_player, alpha, beta):
+    
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = -math.inf
+    for i in range (len(node.child)):
+         
+        node.value = max(node.value, MinValue(node.child[i], depth-1, player, other_player, alpha, beta))
+       
+        if node.value >= beta:
+            return node.value
+        alpha = max(alpha, node.value)
+        
+    return node.value
 
+
+def MinValue(node, depth, player, other_player, alpha, beta):
+    
+    if(node.board.checkIfWinner() != -1 or depth == 0 ):  
+        node.value = evaluation(player, other_player, node.board)
+        return node.value
+    node.value = math.inf
+    for i in range (len(node.child)):
+        
+        node.value = min(node.value, MaxValue(node.child[i], depth-1, player, other_player, alpha, beta))
+        
+        if node.value <= alpha:
+            return node.value
+        beta = min(beta, node.value)
+    return node.value
+                
+        
+def MinMaxPL(node, depth, player, other_player):
+    node.value = MaxValue(node,depth, player, other_player, -math.inf, math.inf)
+    return node.value 
+"""
 """
 This function calls one of the possible actions of the player.
 The function uses the following parameters: 
@@ -434,6 +571,8 @@ def placeCircularPawn(player: int, board: Board) -> bool:
         else:
             print("\nSuccess!\n")
             return True
+
+
 
 """
 moveCircularPawn corresponds to the following action : move a placed circular pawn onto a free square pawn
@@ -590,3 +729,4 @@ def checkWinner(board) -> int:
         return 1
     else:
         return -1
+

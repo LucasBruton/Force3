@@ -22,6 +22,7 @@ class Node():
         self.value = value
         self.child = []
         self.board = board
+        #We created copies to prevent error
         self.copy_board = copy.deepcopy(self.board)
         self.copy_player = copy.deepcopy(self.player)
         self.copy_other_player = copy.deepcopy(self.other_player)
@@ -118,5 +119,16 @@ class Node():
                                         table_y.append(y)
                                         table_y.append(j)
                                         if(self.copy_board.move2SquarePawns(table_x, table_y) == 0):
-                                            action = EdgeAction(4, table_x, table_y)
+                                            action = EdgeAction(4, x, y, None, table_x, table_y)
                                             self.child.append(Node(self.depth-1, self.copy_other_player, self.copy_player, self.copy_board, action))
+
+    """
+    This function permits to display a father node and its childs.
+    We used this function to see and be able to understand how the IA was thinking.
+    """    
+    def display(self): #permet d'afficher un noeud père et ses enfants
+        print("father")
+        self.board.printBoard()
+        print("child")
+        for i in range(len(self.child)):
+            self.child[i].board.printBoard()

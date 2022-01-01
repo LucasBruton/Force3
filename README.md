@@ -1,4 +1,4 @@
 # Force3
 
 Lancer le programme:
-  python3 party.py
+  python3 start.py

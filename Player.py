@@ -1,4 +1,4 @@
-from Constants import BLACK_PAWN, WHITE_PAWN
+from Constants import WHITE_PAWN
 
 # The class Player represents a player of the game.
 
@@ -13,11 +13,6 @@ class Player:
         self.playerNumber = playerNumber
         self.color = color
         self.pawns = []
-
-        """
-        for i in range(3):
-            circularPawn = CircularPawn(self.playerNumber, self.color, i+1)
-            self.pawns.append(circularPawn)"""
 
     # returns true if the player has a circular pawn available
     def isCircularPawnAvailable(self) -> bool:

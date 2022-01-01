@@ -2,7 +2,6 @@ from Board import Board
 from Player import Player
 from Constants import BLACK_PAWN, WHITE_PAWN
 from Node import Node
-import copy
 import math
 import numpy as np
 import random
@@ -67,12 +66,7 @@ def runGame(board: Board, player1: Player, player2: Player, modeGame: int = 0) -
             start = time.time()
             while(not actionDone):
                 actionDone = IAChoices(player2, player1, board)
-            """
-            end = time.time()
-            elapsed = end - start
-            print("Temps d'execution")
-            print(elapsed)
-            """
+
             # check if a player has wone
             if(checkWinner(board) != -1):
                 break
@@ -168,7 +162,7 @@ def twoSquarePawnsPossiblePlayerChoices(player: Player = None, board: Board = No
 
     return actionChoice(int(action), player, board)
 
-    """
+"""
 This function is used when the player has 4 possible actions during his turn.
 The function uses the following parameters:
 - player: IA who choices an action
@@ -177,65 +171,26 @@ Returns true if the action of the player succeeded.
 """
 def IAChoices(player: Player = None, opponent: Player = None, board: Board = None) -> bool:
     node = Node(3, player, opponent, board)
-    """
-    print(player.playerNumber)
-    print("IMPRIME LES ENFANTS")
-    node.affiche()
-    """
     v = MinMaxPL(node, node.depth, player, opponent)
-    """
-    print("VICTOIRE")
-    print(v)
-    """
     best_action = []
     for i in range(len(node.child)):
-        """
-        print("ACTION")
-        print(node.child[i].action.num_action)
-        print("VALUE")
-        print(node.child[i].value)
-        """
         if ((node.child[i].value == v) and (node.child[i].player.playerNumber != player.playerNumber) and (node.child[i].board.checkIfWinner() != opponent.playerNumber)):
-            """
-            print("TA RACE")
-            print(node.child[i].player.playerNumber)
-            """
             best_action.append(node.child[i])
         
         if (node.child[i].board.checkIfWinner() == 0 and node.child[i].board.checkIfWinner() == 1):
             best_action.append(node.child[i])
-    """                
-    print("INTERIEUR BEST ACTION")
-    for coucou in best_action:
-        print(coucou.player.playerNumber)
-        print(coucou.value)
-    """
-    
-    """
-    if (node.child[i].board.checkIfWinner() == player.playerNumber):
-        rand_child = node.child[i]
-    """
+
     if len(best_action) > 1:
         rand_child = random.choice(best_action)
 
     else:
         rand_child = best_action[0]
-    """
-    print("FUCKING RANDCHILD")
-    print(rand_child.action.num_action)
-    """
     #Place a pawn
     if rand_child.action.num_action == 1:
         if(board.placeCircularPawn(player.playerNumber, rand_child.action.x, rand_child.action.y) == 0):
-            return True;
+            return True
     #Move a pawn
     if rand_child.action.num_action == 2:
-        """
-        print("FUCKING ID PAWN")
-        print(rand_child.action.id_pawn)
-        print(rand_child.action.x)
-        print(rand_child.action.y)
-        """
         if rand_child.action.id_pawn == 1:
             if(board.moveCircularPawn(player.playerNumber, 1, rand_child.action.x, rand_child.action.y) == 0):
                 return True
@@ -254,7 +209,7 @@ def IAChoices(player: Player = None, opponent: Player = None, board: Board = Non
         if(board.move2SquarePawns(rand_child.action.table_x, rand_child.action.table_y) == 0):
             return True
 
-           
+# Evaluates the positions of circular pawns         
 def eval_position_pawn(player: Player = None):
     #Values of the tiles depending of their position
         position_pts= np.array([[2,1,2],[1,3,1],[2,1,2]])
@@ -277,7 +232,6 @@ The function uses the following parameters:
 - other_player: the opponent.
 """     
 def eval_nb_pawn(player: Player = None, other_player: Player = None, board: Board = None):
-#J'ai effacé un truc
     nb_pawn_player = len(player.pawns)
     nb_pawn_opponent = len(other_player.pawns)
                         
@@ -292,7 +246,7 @@ def eval_nb_pawn(player: Player = None, other_player: Player = None, board: Boar
 
 
 """
-This function send back +2 if the player place one of its pawn between two pawns from its opponent.
+This function send back +2 if the player places one of its pawn between two pawns from its opponent.
 The function uses the following parameters:
 - player: the player.
 - board: Board of the game.
@@ -336,7 +290,7 @@ def eval_pawn_between(player: Player = None, board: Board = None):
     return res
 
 """
-This function send back +2 if the player place one of its pawn between two pawns from its opponent.
+This function send back +2 if the player places one of its pawn between two pawns from its opponent.
 The function uses the following parameters:
 - player: the player.
 - board: Board of the game.
@@ -397,6 +351,12 @@ def eval_pawn_alignment(player: Player = None):
 
     return res
 
+"""
+This function sends back +1 if the player places one of its pawns next to two consecutive pawns of the opponent.
+The function uses the following parameters:
+- player: the player.
+- board: Board of the game.
+"""
 def eval_opposition_edge_pawn(player: Player = None, board: Board = None):
     res = 0
        
@@ -434,7 +394,8 @@ def eval_opposition_edge_pawn(player: Player = None, board: Board = None):
                and board._get_circularPawn_by_board(i,0).color != player.color):
                    res = 1
     return res
-  
+
+# Calculates the score of the players for a specific board state
 def evaluation(player_max: Player = None, player_min: Player = None, board: Board = None):
         
         if(board.checkIfWinner() == player_max.playerNumber):
@@ -453,7 +414,8 @@ def evaluation(player_max: Player = None, player_min: Player = None, board: Boar
                 
 ##======================================================================#
 ##=======================Function MinMax================================#
-##======================================================================#               
+##======================================================================#      
+# Calculates the max value         
 def MaxValue(node, depth, player, other_player):
     if(node.board.checkIfWinner() != -1 or depth == 0 ):
         node.value = evaluation(player, other_player, node.board)
@@ -464,6 +426,7 @@ def MaxValue(node, depth, player, other_player):
          
     return node.value
 
+# Calculates the min value
 def MinValue(node, depth, player, other_player):
     if(node.board.checkIfWinner() != -1 or depth == 0 ):
         node.value = evaluation(player, other_player, node.board)
@@ -473,51 +436,11 @@ def MinValue(node, depth, player, other_player):
         node.value = min(node.value, MaxValue(node.child[i], depth-1, player, other_player))
         
     return node.value
-                       
+                 
 def MinMaxPL(node, depth, player, other_player):
     node.value = MaxValue(node, depth, player, other_player)
     return node.value 
-##======================================================================#
-##=======================Fonction MinMax utilisant alpha_beta===========#
-##============================Fonction non retenue======================#
-"""
-def MaxValue(node, depth, player, other_player, alpha, beta):
-    
-    if(node.board.checkIfWinner() != -1 or depth == 0 ):
-        node.value = evaluation(player, other_player, node.board)
-        return node.value
-    node.value = -math.inf
-    for i in range (len(node.child)):
-         
-        node.value = max(node.value, MinValue(node.child[i], depth-1, player, other_player, alpha, beta))
-       
-        if node.value >= beta:
-            return node.value
-        alpha = max(alpha, node.value)
-        
-    return node.value
 
-
-def MinValue(node, depth, player, other_player, alpha, beta):
-    
-    if(node.board.checkIfWinner() != -1 or depth == 0 ):  
-        node.value = evaluation(player, other_player, node.board)
-        return node.value
-    node.value = math.inf
-    for i in range (len(node.child)):
-        
-        node.value = min(node.value, MaxValue(node.child[i], depth-1, player, other_player, alpha, beta))
-        
-        if node.value <= alpha:
-            return node.value
-        beta = min(beta, node.value)
-    return node.value
-                
-        
-def MinMaxPL(node, depth, player, other_player):
-    node.value = MaxValue(node,depth, player, other_player, -math.inf, math.inf)
-    return node.value 
-"""
 """
 This function calls one of the possible actions of the player.
 The function uses the following parameters: 

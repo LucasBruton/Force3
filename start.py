@@ -3,7 +3,8 @@ from Player import Player
 from Board import Board
 from Constants import BLACK_PAWN, WHITE_PAWN
 
-def party():
+# Launches the game
+def start():
     decisionPlayer = 0
     decisionPossibilities = ["1", "2", "3"]
     print("What mode of game do you want ?")
@@ -18,6 +19,7 @@ def party():
     else:
         ia_vs_ia(int(decisionPlayer))
 
+# This function is used to create 2 human players for the game
 def player_vs_player(decisionPlayer) -> None:
     playerColor = None
     player1 = None
@@ -40,6 +42,7 @@ def player_vs_player(decisionPlayer) -> None:
 
     runGame(Board(player1, player2), player1, player2, decisionPlayer)
 
+# This function is used to create a human player and a computer player for the game
 def player_vs_ia(decisionPlayer) -> None:
     playerColor = None
     player1 = None
@@ -62,6 +65,7 @@ def player_vs_ia(decisionPlayer) -> None:
     # runs the game
     runGame(Board(player1, player2), player1, player2, decisionPlayer)
 
+# This function is used to create 2 computer players for the game
 def ia_vs_ia(decisionPlayer) -> None:
     player1 = Player(0, WHITE_PAWN)
     player2 = Player(1, BLACK_PAWN)
@@ -69,4 +73,5 @@ def ia_vs_ia(decisionPlayer) -> None:
 
     runGame(Board(player1, player2), player1, player2, decisionPlayer)
 
-party()
+# Call the function that launches the game
+start()

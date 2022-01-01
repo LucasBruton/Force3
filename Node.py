@@ -3,6 +3,7 @@ from Player import Player
 from EdgeAction import EdgeAction
 import copy;
 
+# Node is the class that creates the tree of possibilities for the AI
 class Node():
     """ 
     Instanciate a tree of possibilities, based on the current game and with a chosen depth.
@@ -55,7 +56,7 @@ class Node():
         return res_actions
 
     """
-    This function creates all the child of a node.
+    This function creates every possible child of a node.
     """      
     def createChild(self):   
         actions_possible = self.actions_possible()

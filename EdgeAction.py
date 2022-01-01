@@ -1,3 +1,4 @@
+# The class EdgeAction memorises a possible action of a player
 class EdgeAction():
     """ 
     Instanciate the edge of the tree with the following parameters:
@@ -15,14 +16,19 @@ class EdgeAction():
         self.table_x = table_x
         self.table_y = table_y
 
+    
+    # returns the number of the action
     def _get_num_action(self):
         return self.num_action
     
+    # returns the x coordinate of the action
     def _get_x(self):
         return self.x
     
+    # returns the y coordinate of the action
     def _get_y(self):
         return self.y
       
+    # returns the id of the pawn used for the action
     def _get_id_pawn(self):
         return self.id_pawn 

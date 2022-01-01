@@ -1,7 +1,6 @@
 from Constants import WHITE_PAWN
 from Tile import Tile
 from Player import Player
-import math
 import numpy as np
 import copy
 

@@ -1,2 +1,4 @@
 # Force3
-Projet d'IA41
+
+Lancer le programme:
+  python3 party.py
